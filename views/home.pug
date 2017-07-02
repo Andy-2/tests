@@ -1,0 +1,145 @@
+extends base.pug
+
+append content
+	h1= message
+	// 会显示在结果里的注释
+	//- 不会显示在结果里的注释
+	//
+		这是
+		块注释
+	//-
+		不会显示的
+		块注释
+	<!--[if IE 8]>
+	<![endif]-->
+	- var url	= 'test'
+	a(href=`#${ url }1` style={'background-color': 'red'}) Test1
+	a(href=`#${ url }1` style={'background-color': 'red'}): img
+	br
+	- var bool	= 0
+	a(class=bool ? 'button' : 'hehe' href='#test') Test2
+	br
+	- var classes	= ['c1', 'c2', 'c3']
+	input.a#b(
+		type='checkbox'
+		name=`ab${ bool }c`
+		checked
+		class=classes
+		class='newOne'
+		class=['otherOne']
+		class={condClassTrue: true === true}
+		class={condClassFalse: true === false}
+	)
+	- var attrs	= {}
+	- attrs.class	= ['c1', 'c2']
+	- attrs.abc		= 'hehe3'
+	#testDiv&attributes({
+		'data-value1': 'hehe1',
+		'data-value2': 'hehe2'
+	})&attributes(attrs)
+
+	- var nums	= 0
+	case nums
+		when 0
+		when 1
+			p 会一直运行下去，直到遇到第一个非空的语法块（相当于隐式的break）
+		default
+			p 这里没有执行到
+	case nums
+		when 0
+		when 1: p 这样也是可以的
+		default: p 还是执行不到
+
+	#user1
+		if false
+			h2.green abc
+			p.desc= `hehe ${ false }`
+		else if true
+			h2.blue def
+			p.desc= `haha ${ true }`
+		else
+			h2.red hij
+			p.desc= `emm...`
+	#user2
+		unless true
+			h2.green abc
+			p.desc= `hehe ${ false }`
+		else
+			h2.blue def
+			p.desc= `haha ${ true }`
+
+	ul
+		- for (var x = 0; x < 3; x++)
+			li item
+
+	ul
+		each item in ['a', 'b', 'c']
+			li= item
+
+	p
+		= '这个代码被 <转义> 了！'
+	p
+		!= '这段文字 <strong>没有</strong> 被转义！'
+	p.
+		这特么就!{ '<strong>说来话长</strong>' }了
+		所以#[strong 可以]换一行（#{ '假的<br>' }）
+		是的
+		换一行
+	p
+		| 如果我不用嵌入功能来书写，一些标签比如
+		strong strong
+		| 和
+		em em
+		| 可能会产生以外的&nbsp;结果。
+	p.
+		如果用了嵌入，在 #[strong strong] 和 #[em em] 旁的空格就会让我舒服多了。
+
+	ul
+		each val, index in ['〇', '一', '二']
+			li= `${ index }: ${ val }`
+	ul
+		each val, index in {1:'一', 2:'二', 3:'三'}
+			li= `${ index }: ${ val }`
+
+	- var values	= []
+	ul
+		each val in values.length ? values : ['没有内容']
+			li= val
+	ul
+		//for val in values
+		each val in values
+			li= val
+		else
+			li 没有内容
+
+	- var n	= 0
+	ul
+		while n < 4
+			li= n++
+
+	mixin list(data1, data2)
+		a(class!=attributes.class)
+		a&attributes(attributes)
+		if block
+			block
+		else
+			p 没有提供任何内容
+		ul
+			li= `${ data1 + data2 * 1 }`
+			li= `${ data1 + data2 * 2 }`
+			li= `${ data1 + data2 * 3 }`
+	+list(4, 1)(class='<br>btn')
+		block a
+			p 呵呵哒
+		block b
+			p 哎哟喂
+
+	mixin list(id, ...items)
+		ul(id=id)
+			// [1, 2, 3, 4]
+			each item in items
+				li= item
+	+list('my-list', 1, 2, 3, 4)
+
+append script
+	script(type="text/javascript" src="/js/home.js")
